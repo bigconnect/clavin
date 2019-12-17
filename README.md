@@ -1,18 +1,22 @@
+
 CLAVIN
 ======
 
-
 CLAVIN (*Cartographic Location And Vicinity INdexer*) is an open source software package for document geotagging and geoparsing that employs context-based geographic entity resolution. It combines a variety of open source tools with natural language processing techniques to extract location names from unstructured text documents and resolve them against gazetteer records. Importantly, CLAVIN does not simply "look up" location names; rather, it uses intelligent heuristics-based combinatorial optimization in an attempt to identify precisely which "Springfield" (for example) was intended by the author, based on the context of the document. CLAVIN also employs fuzzy search to handle incorrectly-spelled location names, and it recognizes alternative names (e.g., "Ivory Coast" and "Côte d'Ivoire") as referring to the same geographic entity. By enriching text documents with structured geo data, CLAVIN enables hierarchical geospatial search and advanced geospatial analytics on unstructured data.
+
+Changes
+-------
+This is a modified version of Clavin to work with Lucene 6.4.0
 
 
 How to build & use CLAVIN:
 --------------------------
 
 1. Check out a copy of the source code:
-	> `git clone https://github.com/Berico-Technologies/CLAVIN.git`
+	> `git clone https://github.com/bigconnect/clavin.git`
 
 2. Move into the newly-created CLAVIN directory:
-	> `cd CLAVIN`
+	> `cd clavin`
 
 3. Download the latest version of allCountries.zip gazetteer file from GeoNames.org:
 	> `curl -O http://download.geonames.org/export/dump/allCountries.zip`
@@ -42,9 +46,9 @@ Once that all runs successfully, feel free to modify the CLAVIN source code to s
 
 ```xml
 <dependency>
-   <groupId>com.bericotech</groupId>
+   <groupId>com.mware</groupId>
    <artifactId>clavin</artifactId>
-   <version>2.0.0</version>
+   <version>2.3.0-mware</version>
 </dependency>
 ```
 
@@ -52,7 +56,7 @@ Once that all runs successfully, feel free to modify the CLAVIN source code to s
 
 License:
 --------
-
+Copyright (C) 2019 MWARE SOLUTIONS SRL
 Copyright (C) 2012-2016 Berico Technologies
 
 Licensed under the Apache License, Version 2.0 (the "License");
