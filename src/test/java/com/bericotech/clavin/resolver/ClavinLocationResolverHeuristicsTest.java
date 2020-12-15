@@ -94,7 +94,7 @@ public class ClavinLocationResolverHeuristicsTest {
      */
     @Before
     public void setUp() throws ClavinException {
-        resolver = new ClavinLocationResolver(new LuceneGazetteer(new File("/opt/runtime-3.5.4/geoindex/")));
+        resolver = new ClavinLocationResolver(new LuceneGazetteer(new File("IndexDirectory")));
     }
 
     private List<ResolvedLocation> resolveNoHeuristics(final List<LocationOccurrence> locs, final boolean fuzzy)

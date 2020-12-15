@@ -175,7 +175,7 @@ public class IndexDirectoryBuilder {
         }
 
         LOG.info("[DONE]");
-        LOG.info("{} geonames added to index. ({} records)", indexWriter.maxDoc(), indexCount);
+        LOG.info("{} geonames added to index. ({} records)", indexWriter.getDocStats().maxDoc, indexCount);
         LOG.info("Merging indices... please wait.");
 
         indexWriter.close();
@@ -392,7 +392,10 @@ public class IndexDirectoryBuilder {
         // reuse a single Document and field instances
         Document doc = new Document();
         doc.add(new StoredField(GEONAME.key(), fullAncestry ? geoName.getGazetteerRecordWithAncestry() : geoName.getGazetteerRecord()));
-        doc.add(new LegacyIntField(GEONAME_ID.key(), geoName.getGeonameID(), Field.Store.YES));
+
+        doc.add(new StoredField(GEONAME_ID.key(), geoName.getGeonameID()));
+        doc.add(new IntPoint(GEONAME_ID.key(), geoName.getGeonameID()));
+
         // if the alternate names file was loaded and we found a preferred name for this GeoName, store it
         if (preferredName != null) {
             doc.add(new StoredField(PREFERRED_NAME.key(), preferredName.name));
@@ -400,28 +403,35 @@ public class IndexDirectoryBuilder {
         // index the direct parent ID in the PARENT_ID field
         GeoName parent = geoName.getParent();
         if (parent != null) {
-            doc.add(new LegacyIntField(PARENT_ID.key(), parent.getGeonameID(), Field.Store.YES));
+            doc.add(new StoredField(PARENT_ID.key(), parent.getGeonameID()));
+            doc.add(new IntPoint(PARENT_ID.key(), parent.getGeonameID()));
         }
         // index all ancestor IDs in the ANCESTOR_IDS field; this is a secondary field
         // so it can be used to restrict searches and PARENT_ID can be used for ancestor
         // resolution
         while (parent != null) {
-            doc.add(new LegacyIntField(ANCESTOR_IDS.key(), parent.getGeonameID(), Field.Store.YES));
+            doc.add(new StoredField(ANCESTOR_IDS.key(), parent.getGeonameID()));
+            doc.add(new IntPoint(ANCESTOR_IDS.key(), parent.getGeonameID()));
             parent = parent.getParent();
         }
-        doc.add(new LegacyLongField(POPULATION.key(), geoName.getPopulation(), Field.Store.YES));
+
+        doc.add(new StoredField(POPULATION.key(), geoName.getPopulation()));
+        doc.add(new LongPoint(POPULATION.key(), geoName.getPopulation()));
+
         // set up sort field based on population and geographic feature type
         if (geoName.getFeatureClass().equals(FeatureClass.P) || geoName.getFeatureCode().name().startsWith("PCL")) {
             if (geoName.getGeonameID() != 2643741) // todo: temporary hack until GeoNames.org fixes the population for City of London
                 // boost cities and countries when sorting results by population
-                doc.add(new LegacyLongField(SORT_POP.key(), geoName.getPopulation() * 11, Field.Store.YES));
+                doc.add(new NumericDocValuesField(SORT_POP.key(), geoName.getPopulation() * 11));
         } else {
             // don't boost anything else, because people rarely talk about other stuff
             // (e.g., Washington State's population is more than 10x that of Washington, DC
             // but Washington, DC is mentioned far more frequently than Washington State)
-            doc.add(new LegacyLongField(SORT_POP.key(), geoName.getPopulation(), Field.Store.YES));
+            doc.add(new NumericDocValuesField(SORT_POP.key(), geoName.getPopulation()));
         }
-        doc.add(new LegacyIntField(HISTORICAL.key(), IndexField.getBooleanIndexValue(geoName.getFeatureCode().isHistorical()), Field.Store.NO));
+        doc.add(new StoredField(HISTORICAL.key(), IndexField.getBooleanIndexValue(geoName.getFeatureCode().isHistorical())));
+        doc.add(new IntPoint(HISTORICAL.key(), IndexField.getBooleanIndexValue(geoName.getFeatureCode().isHistorical())));
+
         doc.add(new StringField(FEATURE_CODE.key(), geoName.getFeatureCode().name(), Field.Store.NO));
 
         // create a unique Document for each name of this GeoName

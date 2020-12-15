@@ -1,9 +1,6 @@
 package com.bericotech.clavin.index;
 
-import java.io.Reader;
-
 import org.apache.lucene.analysis.util.CharTokenizer;
-import org.apache.lucene.util.Version;
 
 /*#####################################################################
  *
@@ -55,15 +52,5 @@ public class WhitespaceLowerCaseTokenizer extends CharTokenizer {
     @Override
     protected boolean isTokenChar(int c) {
         return !Character.isWhitespace(c);
-    }
-
-    /** Converts char to lower case
-     * {@link Character#toLowerCase(int)}.
-     *
-     * @param c     char being processed
-     */
-    @Override
-    protected int normalize(int c) {
-        return Character.toLowerCase(c);
     }
 }

@@ -1,6 +1,9 @@
 package com.bericotech.clavin.index;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
 
 /*#####################################################################
  *
@@ -50,6 +53,13 @@ public class WhitespaceLowerCaseAnalyzer extends Analyzer {
      */
     @Override
     protected TokenStreamComponents createComponents(final String fieldName) {
-        return new TokenStreamComponents(new WhitespaceLowerCaseTokenizer());
+        Tokenizer source = new WhitespaceLowerCaseTokenizer();
+        TokenStream filter = new LowerCaseFilter(source);
+        return new TokenStreamComponents(source, filter);
+    }
+
+    @Override
+    protected TokenStream normalize(String fieldName, TokenStream in) {
+        return new LowerCaseFilter(in);
     }
 }
